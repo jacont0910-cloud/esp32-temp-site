@@ -28,7 +28,11 @@ async function refresh(){
     const j = await r.json();
     const v = parseFloat(j.field1);
     document.getElementById("t").textContent = Number.isFinite(v) ? v.toFixed(1)+" °F" : "--.- °F";
-    document.getElementById("ts").textContent = "Last update (UTC): " + (j.created_at || "");
+    const dt = new Date(j.created_at);
+    document.getElementById("time").textContent =
+    "Last update (CT): " +
+    dt.toLocaleString("en-US", { timeZone: "America/Chicago" });
+
   }catch(e){
     document.getElementById("ts").textContent = "Offline / not reachable";
   }
