@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
+  <title>Live Temperature</title>
+  <style>
+    body{font-family:system-ui;margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;background:#0b0f14;color:#e8eef5}
+    .card{width:min(520px,92vw);background:#121a24;border:1px solid #223043;border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .temp{font-size:56px;font-weight:700;margin:10px 0}
+    .muted{opacity:.75}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="muted">Live Temperature</div>
+    <div class="temp" id="t">--.- °F</div>
+    <div class="muted" id="ts">Updating…</div>
+  </div>
+
+<script>
+const CHANNEL_ID = "3223661";
+
+async function refresh(){
+  const url = `https://api.thingspeak.com/channels/${CHANNEL_ID}/fields/1/last.json`;
+  try{
+    const r = await fetch(url, {cache:"no-store"});
+    const j = await r.json();
+    const v = parseFloat(j.field1);
+    document.getElementById("t").textContent = Number.isFinite(v) ? v.toFixed(1)+" °F" : "--.- °F";
+    document.getElementById("ts").textContent = "Last update (UTC): " + (j.created_at || "");
+  }catch(e){
+    document.getElementById("ts").textContent = "Offline / not reachable";
+  }
+}
+
+setInterval(refresh, 5000);
+refresh();
+</script>
+</body>
+</html>
