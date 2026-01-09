@@ -19,27 +19,31 @@
   </div>
 
 <script>
-const CHANNEL_ID = "3223661";
+const CHANNEL_ID = 3223661;
+const URL = `https://api.thingspeak.com/channels/${CHANNEL_ID}/fields/1/last.json`;
 
 async function refresh(){
-  const url = `https://api.thingspeak.com/channels/${CHANNEL_ID}/fields/1/last.json`;
   try{
-    const r = await fetch(url, {cache:"no-store"});
+    const r = await fetch(URL, { cache: "no-store" });
     const j = await r.json();
-    const v = parseFloat(j.field1);
-    document.getElementById("t").textContent = Number.isFinite(v) ? v.toFixed(1)+" °F" : "--.- °F";
+
+    const temp = parseFloat(j.field1);
+    document.getElementById("temp").textContent =
+      Number.isFinite(temp) ? temp.toFixed(1) + " °F" : "--.- °F";
+
     const dt = new Date(j.created_at);
     document.getElementById("time").textContent =
-    "Last update (CT): " +
-    dt.toLocaleString("en-US", { timeZone: "America/Chicago" });
+      "Last update (CT): " +
+      dt.toLocaleString("en-US", { timeZone: "America/Chicago" });
 
-  }catch(e){
-    document.getElementById("ts").textContent = "Offline / not reachable";
+  } catch (e) {
+    document.getElementById("time").textContent = "Offline / unavailable";
   }
 }
 
 setInterval(refresh, 5000);
 refresh();
+
 </script>
 </body>
 </html>
